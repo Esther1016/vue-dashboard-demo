@@ -1,6 +1,7 @@
 <template>
   <div>
     <Navbar />
+    <AlertMessage></AlertMessage>
     <div class="container-fluid">
       <div class="row">
         <Sidebar></Sidebar>
@@ -15,11 +16,13 @@
 <script>
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
+import AlertMessage from "./AlertMessage";
 
 export default {
   components: {
     Sidebar,
-    Navbar
+    Navbar,
+    AlertMessage
   },
   created() {
     const cookieValue = document.cookie

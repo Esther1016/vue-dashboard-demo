@@ -1,5 +1,6 @@
 <template>
   <div>
+    <loading :active.sync="isLoading"></loading>  
     <div class="text-right mt-4">
       <button class="btn btn-primary" @click="openModal('new')">
         建立新的產品
@@ -87,13 +88,14 @@
                 <div class="form-group">
                   <label for="customFile"
                     >或 上傳圖片
-                    <i class="fas fa-spinner fa-spin"></i>
+                    <i class="fas fa-spinner fa-spin" v-if="status.fileUploading"></i>
                   </label>
                   <input
                     type="file"
                     id="customFile"
                     class="form-control"
                     ref="files"
+                    @change="uploadFile"
                   />
                 </div>
                 <img
@@ -270,15 +272,21 @@ export default {
     return {
       products: [],
       tempProduct: {},
-      isNew: 'edit'
+      isNew: 'edit',
+      isLoading:false,
+      status:{
+          fileUploading: false,
+      }
     };
   },
   methods: {
     getProducts() {
       const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/products`;
       const vm = this;
+      vm.isLoading = true;
       this.$http.get(api).then(response => {
         console.log(response.data);
+        vm.isLoading = false;
         vm.products = response.data.products;
       });
     },
@@ -333,10 +341,35 @@ export default {
         }
         // vm.products = response.data.products;
       });
+    },
+    uploadFile(){
+        const uploadedFile = this.$refs.files.files[0];
+        const vm = this;
+        //模擬傳統表單送出
+        const formData = new FormData();
+        //將欄位新增進formData
+        formData.append('file-to-upload',uploadedFile);
+        const url = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/upload`;
+        vm.status.fileUploading = true; //更改上傳的圖示
+        this.$http.post(url,formData,{
+            headers:{ //將格式改成formData格式
+                'Content-Type':'multipart/form-data'
+            }
+        }).then((response) => {
+            console.log(response.data);
+            vm.status.fileUploading = false;
+            if(response.data.success){
+                // vm.tempProduct.imageUrl = response.data.imageUrl; //沒有雙向綁定
+                vm.$set(vm.tempProduct, 'imageUrl', response.data.imageUrl);
+            } else{
+              this.$bus.$emit('message:push',response.data.message,'danger');
+            }
+        })
     }
   },
   created() {
     this.getProducts();
+    // this.$bus.$emit('message:push','這裡是一段訊息','success');
   }
 };
 </script>
