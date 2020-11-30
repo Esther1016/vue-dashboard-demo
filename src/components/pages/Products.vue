@@ -48,19 +48,7 @@
         </tr>
       </tbody>
     </table>
-    <nav aria-label="...">
-      <ul class="pagination">
-        <li class="page-item" :class="{'disabled':!pagination.has_pre}">
-          <a class="page-link" href="#" tabindex="-1" aria-disabled="true" @click.prevent="getProducts(pagination.current_page-1)"
-            >Previous</a
-          >
-        </li>
-        <li class="page-item" v-for="page in pagination.total_pages" :key="page" :class="{'active': pagination.current_page === page}"><a class="page-link" href="#" @click.prevent="getProducts(page)">{{ page }}</a></li>
-        <li class="page-item" :class="{'disabled':!pagination.has_next}">
-          <a class="page-link" href="#" @click.prevent="getProducts(pagination.current_page+1)">Next</a>
-        </li>
-      </ul>
-    </nav>
+    <Pagination :pages="pagination" @emit="getProducts"></Pagination>
     <!-- Modal -->
     <div
       class="modal fade"
@@ -284,8 +272,12 @@
 </template>
 <script>
 import $ from "jquery";
+import Pagination from "../Pagination";
 
 export default {
+  components:{
+    Pagination
+  },
   data() {
     return {
       products: [],
