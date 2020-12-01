@@ -65,19 +65,25 @@
             <th>單價</th>
           </thead>
           <tbody>
-            <tr v-for="item in cart.carts" :key="item.id" v-if="cart.carts">
+            <tr v-for="item in cart.carts" :key="item.id">
               <td class="align-middle">
-                <button type="button" class="btn btn-outline-danger btn-sm">
+                <button
+                  type="button"
+                  class="btn btn-outline-danger btn-sm"
+                  @click="removeCartItem(item.id)"
+                >
                   <i class="far fa-trash-alt"></i>
                 </button>
               </td>
               <td class="align-middle">
                 {{ item.product.title }}
-                <!-- <div class="text-success" v-if="item.coupon">
+                <div class="text-success" v-if="item.coupon">
                   已套用優惠券
-                </div> -->
+                </div>
               </td>
-              <td class="align-middle">{{ item.qty }}/{{ item.product.unit }}</td>
+              <td class="align-middle">
+                {{ item.qty }}/{{ item.product.unit }}
+              </td>
               <td class="align-middle text-right">{{ item.final_total }}</td>
             </tr>
           </tbody>
@@ -86,12 +92,25 @@
               <td colspan="3" class="text-right">總計</td>
               <td class="text-right">{{ cart.total }}</td>
             </tr>
-            <!-- <tr v-if="cart.final_total">
+            <tr v-if="cart.final_total !== cart.total">
               <td colspan="3" class="text-right text-success">折扣價</td>
               <td class="text-right text-success">{{ cart.final_total }}</td>
-            </tr> -->
+            </tr>
           </tfoot>
         </table>
+        <div class="input-group mb-3 input-group-sm">
+          <input
+            type="text"
+            class="form-control"
+            v-model="coupon_code"
+            placeholder="請輸入優惠碼"
+          />
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" @click="addCouponCode">
+              套用優惠碼
+            </button>
+          </div>
+        </div>
       </div>
     </div>
     <!-- modal -->
@@ -175,8 +194,9 @@ export default {
       status: {
         loadingItem: ""
       },
-      cart:{},
-      isLoading: false
+      cart: {},
+      isLoading: false,
+      coupon_code: ""
     };
   },
   methods: {
@@ -216,7 +236,7 @@ export default {
         $("#productModal").modal("hide");
       });
     },
-    getCart(){
+    getCart() {
       const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/cart`;
       const vm = this;
       vm.isLoading = true;
@@ -224,7 +244,27 @@ export default {
         console.log(response.data);
         vm.cart = response.data.data;
         vm.isLoading = false;
-        // vm.products = response.data.products;
+      });
+    },
+    removeCartItem(id) {
+      const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/cart/${id}`;
+      const vm = this;
+      vm.isLoading = true;
+      this.$http.delete(api).then(() => {
+        vm.getCart();
+        vm.isLoading = false;
+      });
+    },
+    addCouponCode() {
+      const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/coupon`;
+      const vm = this;
+      const coupon = {
+        code: vm.coupon_code
+      };
+      vm.isLoading = true;
+      this.$http.post(api, { data: coupon }).then(response => {
+        console.log(response.data);
+        vm.isLoading = false;
       });
     }
   },
