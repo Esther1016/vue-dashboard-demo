@@ -40,7 +40,11 @@
               ></i>
               查看更多
             </button>
-            <button type="button" class="btn btn-outline-danger btn-sm ml-auto">
+            <button
+              type="button"
+              class="btn btn-outline-danger btn-sm ml-auto"
+              @click="addtoCart(item.id)"
+            >
               <i
                 class="fas fa-spinner fa-spin"
                 v-if="status.loadingItem === item.id"
@@ -155,10 +159,36 @@ export default {
         $("#productModal").modal("show");
         vm.status.loadingItem = "";
       });
+    },
+    addtoCart(id, qty = 1) {
+      const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/cart`;
+      const vm = this;
+      const cart = {
+        product_id: id,
+        qty
+      };
+      vm.status.loadingItem = id;
+      this.$http.post(api, { data: cart }).then(response => {
+        console.log(response.data);
+        vm.status.loadingItem = "";
+        vm.getCart();
+        $("#productModal").modal("hide");
+      });
+    },
+    getCart(){
+      const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/cart`;
+      const vm = this;
+      vm.isLoading = true;
+      this.$http.get(api).then(response => {
+        console.log(response.data);
+        vm.isLoading = false;
+        // vm.products = response.data.products;
+      });
     }
   },
   created() {
     this.getProducts();
+    this.getCart();
   }
 };
 </script>
