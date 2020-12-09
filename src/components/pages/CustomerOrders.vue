@@ -64,7 +64,7 @@
             <th>數量</th>
             <th>單價</th>
           </thead>
-          <tbody>
+          <tbody v-if="cart.carts">
             <tr v-for="item in cart.carts" :key="item.id">
               <td class="align-middle">
                 <button
