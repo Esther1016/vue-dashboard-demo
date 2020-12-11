@@ -15,12 +15,14 @@ import App from './App';
 import router from './router';
 import './bus';
 import currencyFilter from './filters/currency';
+import dateFilter from './filters/date';
 
 Vue.config.productionTip = false;
 Vue.use(VueAxios, axios);//Usage in Vue 2
 
 Vue.component('Loading',Loading);
 Vue.filter('currency', currencyFilter);
+Vue.filter('date', dateFilter);
 Vue.use(VueI18n)
 
 const i18n = new VueI18n({

@@ -6,7 +6,7 @@
         <tr>
           <th>購買時間</th>
           <th>Email</th>
-          <th>購買款項</th>
+          <th>購買品項</th>
           <th>應付金額</th>
           <th>是否付款</th>
         </tr>
@@ -60,7 +60,6 @@ export default {
         vm.isLoading = false;
         vm.orders = response.data.orders;
         vm.pagination = response.data.pagination;
-        console.log(vm.orders.length);
       });
     }
   },  
