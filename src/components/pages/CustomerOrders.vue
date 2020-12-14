@@ -371,7 +371,10 @@ export default {
           // 當驗證成功時執行 AJAX 的行為
           this.$http.post(api, { data: order }).then(response => {
             console.log("訂單已建立", response.data);
-            vm.getCart();
+            if(response.data.success){
+              vm.$router.push(`/customer_checkout/${response.data.orderId}`);
+            }
+            // vm.getCart();
             vm.isLoading = false;
           });
         } else {
